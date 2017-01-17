@@ -12,7 +12,7 @@ $nbet_pref = $_GET['nbet_pref'];
 
 
 
-$inequation_nbet = array();
+
 
 
 // Connexion base de données
@@ -119,21 +119,23 @@ try
 
     $data=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo json_encode($data);
+    $data = json_encode($data);
+
+    normalisation($data);
 
 } catch (PDOException $e){
     echo 'Echec Skyline : ' . $e->getMessage();
 }
 
-function (){
+function normalisation($data){
 
 
 }
 
 
 
-$dbh = null;
+//$dbh = null;
 
 
 
-
+?>
