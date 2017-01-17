@@ -1,0 +1,24 @@
+
+
+body
+{
+    background-image: url(../Img/casa-angelina-hotel-praiano-20.jpg);
+    background-repeat: no-repeat;
+    background-size:cover;
+    margin:0;
+    background-color: ghostwhite;
+}
+
+h, h1, h2
+{
+    color: white;
+}
+
+/* ID */
+
+#choix_pref
+{
+    background-color: rgba(223, 254, 255, 0.65);
+
+    padding: 1em;
+}
