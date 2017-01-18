@@ -9,9 +9,9 @@
         </tr>
         <tr>
             <td>Poids</td>
-            <td><input type="text" class="form-control"  id="prix_poids" name="prix_poids" placeholder=""></td>
-            <td><input type="text" class="form-control" id="distance_poids" name="distance_poids" placeholder=""></td>
-            <td><input type="text" class="form-control" name="nbet_poids" placeholder=""></td>
+            <td><input type="text" class="form-control"  id="input-prix" name="prix_poids" placeholder=""></td>
+            <td><input type="text" class="form-control"  id="input-distance" name="distance_poids" placeholder=""></td>
+            <td><input type="text" class="form-control"  name="nbet_poids" id="input-nbet" placeholder=""></td>
         </tr>
         <tr>
             <td>Préférences</td>

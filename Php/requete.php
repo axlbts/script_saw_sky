@@ -1,25 +1,50 @@
 <?php
 
 require_once('class.php');
-$hotel= new Hotel();
-
-$prix_poids = $_GET['prix_poids'];
-$distance_poids = $_GET['distance_poids'];
-$nbet_poids = $_GET['nbet_poids'];
-$prix_pref = $_GET['prix_pref'];
-$distance_pref = $_GET['distance_pref'];
-$nbet_pref = $_GET['nbet_pref'];
 
 
 
 
+recuperation();
+
+function recuperation(){
 
 
-// Connexion base de données
+// Récupération des données
+
+	$prix_poids = $_GET['prix_poids'];
+	$distance_poids = $_GET['distance_poids'];
+	$nbet_poids = $_GET['nbet_poids'];
+	$prix_pref = $_GET['prix_pref'];
+	$distance_pref = $_GET['distance_pref'];
+	$nbet_pref = $_GET['nbet_pref'];
+
+// Conversion
+
+	$prix_poids_int = (int)$prix_poids;
+	$distance_poids_int = (int)$distance_poids;
+	$nbet_poids_int = (int)$nbet_poids;
+
+// Vérification poids = 100
+
+		if( $prix_poids_int + $distance_poids_int + $nbet_poids_int == 100){
+			
+			connexion($prix_poids, $distance_poids, $nbet_poids, $prix_pref, $distance_pref, $nbet_pref);
+		}else{
+			echo 'Erreur somme';
+		}
+		
+}
+
+
+function connexion($prix_poids, $distance_poids, $nbet_poids, $prix_pref, $distance_pref, $nbet_pref){
+	// Connexion base de données
 try
 {
+	$hotel= new Hotel();
     $dbh = new PDO($hotel->getHost(),$hotel->getUser(),$hotel->getPass());
     $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
 } catch (PDOException $e){
     echo 'Echec lors de la connexion : ' . $e->getMessage();
 }
@@ -127,10 +152,20 @@ try
     echo 'Echec Skyline : ' . $e->getMessage();
 }
 
+}
+
+
 function normalisation($data){
 
-
+	echo $data;
 }
+
+
+
+
+	
+
+
 
 
 
