@@ -1,7 +1,21 @@
 <?php
-
 require_once('class.php');
 
+
+
+// Récupération des données
+
+    $prix_poids = 0;
+    $distance_poids = 0;
+    $nbet_poids = 0;
+    $prix_pref = 0;
+    $distance_pref = 0;
+    $nbet_pref =0;
+
+// Conversion
+    $prix_poids_float = 0;
+    $distance_poids_float = 0;
+    $nbet_poids_float = 0;
 
 
 
@@ -9,25 +23,25 @@ recuperation();
 
 function recuperation(){
 
+global $prix_poids_float, $distance_poids_float, $nbet_poids_float;
 
 // Récupération des données
 
-	$prix_poids = $_GET['prix_poids'];
-	$distance_poids = $_GET['distance_poids'];
-	$nbet_poids = $_GET['nbet_poids'];
+	$prix_poids = (float)$_GET['prix_poids'];
+	$distance_poids = (float)$_GET['distance_poids'];
+	$nbet_poids = (float)$_GET['nbet_poids'];
 	$prix_pref = $_GET['prix_pref'];
 	$distance_pref = $_GET['distance_pref'];
 	$nbet_pref = $_GET['nbet_pref'];
 
 // Conversion
-
-	$prix_poids_int = (int)$prix_poids;
-	$distance_poids_int = (int)$distance_poids;
-	$nbet_poids_int = (int)$nbet_poids;
+	$prix_poids_float = $prix_poids/100 ;
+	$distance_poids_float = $distance_poids/100;
+	$nbet_poids_float = $nbet_poids/100;
 
 // Vérification poids = 100
 
-		if( $prix_poids_int + $distance_poids_int + $nbet_poids_int == 100){
+		if( $prix_poids_float + $distance_poids_float + $nbet_poids_float == 1){
 			
 			connexion($prix_poids, $distance_poids, $nbet_poids, $prix_pref, $distance_pref, $nbet_pref);
 		}else{
@@ -142,11 +156,16 @@ try
 
     $stmt->execute();
 
-    $data=$stmt->fetchAll(PDO::FETCH_ASSOC);
+    //$data=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $data = json_encode($data);
+    $result=array();
 
-    normalisation($data);
+    while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $result[] = $row;
+    }
+    
+    //var_dump($result);
+    normalisation($result);
 
 } catch (PDOException $e){
     echo 'Echec Skyline : ' . $e->getMessage();
@@ -154,16 +173,93 @@ try
 
 }
 
+// Minimum
+        function minimum($tab, $attribut) {
+            $min = $tab[0]["$attribut"];
+            for($i = 0; $i < count($tab); ++$i) {
+                if($tab[$i]["$attribut"] < $min) {
+                    $min = $tab[$i]["$attribut"];
+                }
+            }
+            return $min;
+        }
 
+// Maximum
+        function maximum($tab, $attribut) {
+            $max = $tab[0]["$attribut"];
+            for($i = 0; $i < count($tab); ++$i) {
+                if($tab[$i]["$attribut"] > $max) {
+                    $max = $tab[$i]["$attribut"];
+                }
+            }
+            return $max;
+        }
+
+
+// Normalisation des critères :
 function normalisation($data){
+    $result_norm=array();
+    //var_dump($data);
+    for($i = 0; $i<count($data); ++$i)
+    {
+            $result_norm[$i]["IdH"] = $data[$i]["IdH"];
+            $result_norm[$i]["Prix"] = round(floatval(($prix_pref == 'min') ? minimum($data, "Prix")/$data[$i]["Prix"] : $data[$i]["Prix"]/maximum($data, "Prix")),3);
+            $result_norm[$i]["Distance"] = round(floatval(($distance_pref == 'min') ? minimum($data, "Distance")/$data[$i]["Distance"] : $data[$i]["Distance"]/maximum($data, "Distance")),3);
+            $result_norm[$i]["NbEt"] = round(floatval(($nbet_pref == 'min') ? minimum($data, "NbEt")/$data[$i]["NbEt"] : $data[$i]["NbEt"]/maximum($data, "NbEt")),3);
+    }
 
-	echo $data;
+
+	//var_dump( $result_norm);
+    ponderation($result_norm);
+
+}
+
+function ponderation($data){
+    $result_pond = array();
+
+    global $prix_poids_float, $distance_poids_float, $nbet_poids_float;
+
+    //var_dump($data);
+   // echo($data[0]["Prix"]);
+    
+    for($i = 0; $i < count($data); ++$i){
+        $result_pond[$i]["IdH"] = $data[$i]["IdH"];
+        $result_pond[$i]["Prix"] = round($prix_poids_float*$data[$i]["Prix"],3);
+        $result_pond[$i]["Distance"] = round($distance_poids_float*$data[$i]["Distance"],2);
+        $result_pond[$i]["NbEt"] = round($nbet_poids_float*$data[$i]["NbEt"],2);
+        
+    }
+    score($result_pond);
+}
+
+function score($data){
+    $result_score=array();
+    for($i = 0; $i < count($data); ++$i)
+    {
+        $result_score[$i]["score"] = round($data[$i]["Prix"]+$data[$i]["Distance"]+$data[$i]["NbEt"],2);
+    }
+    //var_dump($result_score);
+
+
+    $dbh = null;
+
+    $score = array();
+
+    foreach ($data as $key => $row) {
+        //var_dump($key);
+        $score[$key] = $row['score'];
+    }
+
+    //var_dump($score);
+
+    array_multisort($score, SORT_DESC, $data);
+        //var_dump($result_pond);
+
+        echo json_encode($data);
 }
 
 
 
-
-	
 
 
 

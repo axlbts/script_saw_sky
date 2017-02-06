@@ -12,7 +12,7 @@
 <h1>Hôtel</h1>
 
     <div id="choix_pref" class=".col-md-6 .col-md-offset-3">
-    <p>Choisissez vos préférences : </p>
+    <h2>Choisissez vos préférences : </h2>
 
     <?php include ("View/form.php"); ?>
 

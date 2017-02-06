@@ -3,8 +3,8 @@
 class Hotel
 {
     private $host = 'mysql:host=localhost;dbname=coursBD';
-    private $user = 'root';
-    private $pass = '';
+    private $user = 'phpmyadmin';
+    private $pass = 'root';
 
     /**
      * @return string
